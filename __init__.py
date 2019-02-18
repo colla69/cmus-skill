@@ -1,6 +1,7 @@
 import os
+import time
 from adapt.intent import IntentBuilder
-from mycroft.skills.core import MycroftSkill, intent_file_handler
+from mycroft.skills.core import MycroftSkill, intent_file_handler, intent_handler
 from mycroft.util.log import LOG
 
 __author__ = 'colla69'
@@ -14,13 +15,10 @@ def pause_player():
     os.system("cmus-remote -u")
 
 
-def search_player(self, text):
-    os.system("cmus-remote -C " + text)
-    os.system("cmus-remote -n")
-
-
-def stop_player():
-    os.system("killall cmus")
+def search_player(text):
+    os.system('cmus-remote -C "/' + text+'"')
+    os.system('cmus-remote -C "win-activate"')
+    # os.system("cmus-remote -n")
 
 
 class CmusPlayerSkill(MycroftSkill):
@@ -28,7 +26,8 @@ class CmusPlayerSkill(MycroftSkill):
     def __init__(self):
         super(CmusPlayerSkill, self).__init__(name="TemplateSkill")
         # Initialize working variables used within the skill.
-        self.running = False
+        self.start_player()
+        self.running = True
 
     @intent_file_handler('play.music.intent')
     def handle_play_music_ntent(self, message):
@@ -40,16 +39,23 @@ class CmusPlayerSkill(MycroftSkill):
     def handle_pause_music_intent(self, message):
         pause_player()
 
-    @intent_file_handler('search.music.intent')
+    @intent_handler(IntentBuilder("search.music.intent").require("search.music").require("SongToPlay").build())
     def handle_search_music_intent(self, message):
+        songtoplay = message.data.get("SongToPlay")
+        LOG.info(songtoplay)
         if not self.running:
-            start_player()
-        LOG.info(message)
-        search_player(message)
+            self.start_player()
+        search_player(songtoplay)
 
     def start_player(self):
         self.running = True
         os.system("cmus  </dev/null>/dev/null 2>&1 &")
+        time.sleep(1)
+
+
+    def stop_player(self):
+        self.running = False
+        os.system("killall cmus")
 
     def converse(self, utterances, lang="en-us"):
         # contains all triggerwords for second layer Intents
@@ -59,7 +65,7 @@ class CmusPlayerSkill(MycroftSkill):
 
     def stop(self):
         if self.running:
-            stop_player()
+            self.stop_player()
 
 
 def create_skill():
