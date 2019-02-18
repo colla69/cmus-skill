@@ -49,13 +49,16 @@ class CmusPlayerSkill(MycroftSkill):
 
     def start_player(self):
         self.running = True
-        os.system("cmus  </dev/null>/dev/null 2>&1 &")
+        os.system("screen -d -m -S cmus cmus")
+        # os.system("cmus  </dev/null>/dev/null 2>&1 &")
+        # no stdout > cmus idles using 15 to 20 % CPU
         time.sleep(1)
 
 
     def stop_player(self):
         self.running = False
-        os.system("killall cmus")
+        os.system("cmus-remote -C quit")
+        # os.system("killall cmus")
 
     def converse(self, utterances, lang="en-us"):
         # contains all triggerwords for second layer Intents
