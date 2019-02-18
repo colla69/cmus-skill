@@ -10,6 +10,6 @@ This Mycroft skill can control the cmus player with speech commands.
   `msm install https://github.com/colla69/cmus-skill`
 
 ### Usage
-  "Hey Mycroft, play my music!"  
-  "Hey Mycroft, pause music!"
-  "Hey Mycroft, search music eminem stan"
+  "Hey Mycroft, play my music!"  <br/>
+  "Hey Mycroft, pause music!"  <br/>
+  "Hey Mycroft, search music eminem stan"  <br/>
